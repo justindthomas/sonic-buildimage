@@ -1,5 +1,5 @@
 [group:dhcp-relay]
-programs=dhcprelayd,
+programs=dhcprelayd
 {%- set relay_for_ipv6 = { 'flag': False } %}
 {%- set add_preceding_comma = { 'flag': False } %}
 {% if dhcp_server_ipv4_enabled %}
