@@ -41,6 +41,7 @@ setuptools.setup(
                                      'templates/ospfd/ospfd.conf.db.comm_list.j2',
                                      'templates/ospfd/ospfd.conf.db.distributeroute.j2',
                                      'templates/ospfd/ospfd.conf.db.interface.j2',
+                                     'templates/ospfd/ospfd.conf.db.neighbor.j2',
                                      'templates/ospfd/ospfd.conf.db.policyrange.j2',
                                      'templates/ospfd/ospfd.conf.db.vlink.j2',
                                      'templates/staticd/staticd.conf.j2',
