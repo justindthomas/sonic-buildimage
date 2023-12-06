@@ -74,6 +74,11 @@ router ospf vrf {{ vrf }}
 {% endif %}
   {{ distance_cmd }}
 {% endif %}
+{# -------OSPFV2_NEIGHBOR Begin --------------------------- #}
+{% if OSPFV2_NEIGHBOR is defined and OSPFV2_NEIGHBOR|length > 0 %}
+{% include "ospfd.conf.db.neighbor.j2" %}
+{% endif %}
+{# -------OSPFV2_NEIGHBOR end --------------------------- #}
 {# -------OSPFV2_ROUTER end --------------------------- #}
 {# -------OSPFV2_ROUTER_AREA Begin --------------------------- #}
 {% if OSPFV2_ROUTER_AREA is defined and OSPFV2_ROUTER_AREA|length > 0 %}
