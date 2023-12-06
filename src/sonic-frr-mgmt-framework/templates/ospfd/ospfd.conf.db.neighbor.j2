@@ -1,0 +1,15 @@
+{# ------------------------------------------------------------------------------------ #}
+{# ------------------------------------------------------------------------------------ #}
+{% if OSPFV2_NEIGHBOR is defined and OSPFV2_NEIGHBOR|length > 0 %}
+{% for (ospf_neighbor_key, ospf_neighbor_instance) in OSPFV2_NEIGHBOR.items() %}
+{% set ospf_neighbor_vrf = ospf_neighbor_key[0] %}
+{% set ospf_neighbor_addr = ospf_neighbor_key[1] %}
+ neighbor {{ ospf_neighbor_addr }}
+{%- if 'poll-interval' in ospf_neighbor_instance %}
+ poll-interval {{ ospf_neighbor_instance['poll-interval'] }}
+{% endif %}
+{%- if 'priority' in ospf_neighbor_instance %}
+ priority {{ ospf_neighbor_instance['priority'] }}
+{% endif %}
+{% endfor %}
+{% endif %}
