@@ -1213,11 +1213,11 @@ def handle_ospf_if_nwtype(daemon, cmd_str, op, st_idx, args, data):
     no_op = 'no ' if op == CachedDataWithOp.OP_DELETE else ''
 
     nwtype = ''
-    if args[2] == 'POINT_TO_POINT_NETWORK' :
+    if args[1] == 'POINT_TO_POINT_NETWORK' :
         nwtype = 'point-to-point'
-    elif args[2] == 'BROADCAST_NETWORK' :
+    elif args[1] == 'BROADCAST_NETWORK' :
         nwtype = 'broadcast'
-    elif args[2] == 'NON_BROADCAST' :
+    elif args[1] == 'NON_BROADCAST' :
         nwtype = 'non-broadcast'
     else :
         syslog.syslog(syslog.LOG_ERR, 'handle_ospf_if_nwtype invalid nw type args {}'.format(args))
