@@ -7,8 +7,8 @@
  neighbor {{ ospf_neighbor_addr }}
 {%- if 'poll-interval' in ospf_neighbor_instance %}
  poll-interval {{ ospf_neighbor_instance['poll-interval'] }}
-{% endif %}
-{%- if 'priority' in ospf_neighbor_instance %}
+{%- endif %}
+{%- if 'priority' in ospf_neighbor_instance -%}
  priority {{ ospf_neighbor_instance['priority'] }}
 {% endif %}
 {% endfor %}
