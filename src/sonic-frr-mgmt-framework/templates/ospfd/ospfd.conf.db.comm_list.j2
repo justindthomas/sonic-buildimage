@@ -111,12 +111,27 @@ router ospf vrf {{ vrf }}
 {% endif %}
 {# -------OSPFV2_ROUTER_AREA_POLICY_ADDRESS_RANGE end --------------------------- #}
 {# -------OSPFV2_ROUTER_DISTRIBUTE_ROUTE Begin --------------------------- #}
-{% if OSPFV2_ROUTER_DISTRIBUTE_ROUTE is defined and OSPFV2_ROUTER_DISTRIBUTE_ROUTE|length > 0 %}
-{% for routekey, route_instance in OSPFV2_ROUTER_DISTRIBUTE_ROUTE.items() %}
-{% include "ospfd.conf.db.distributeroute.j2" %}
+{# ------- redistribute - Start --------------------------- #}
+{% if ROUTE_REDISTRIBUTE is defined and ROUTE_REDISTRIBUTE|length > 0 %}
+{% for rr_key, rr_val in ROUTE_REDISTRIBUTE.items() %}
+{% if 'ospf' == rr_key[2] and vrf == rr_key[0] %}
+{% if 'route_map' in rr_val %}
+{% for rmap in rr_val['route_map'] %}
+  redistribute {{rr_key[1]}} route-map {{rmap}}
+{% endfor %}
+{% else %}
+  redistribute {{rr_key[1]}}
+{% endif %}
+{% endif %}
 {% endfor %}
 {% endif %}
-{# -------OSPFV2_ROUTER_DISTRIBUTE_ROUTE end --------------------------- #}
+{# ------- redistribute - End ----------------------------- #}
+{# {% if OSPFV2_ROUTER_DISTRIBUTE_ROUTE is defined and OSPFV2_ROUTER_DISTRIBUTE_ROUTE|length > 0 %} #}
+{# {% for routekey, route_instance in OSPFV2_ROUTER_DISTRIBUTE_ROUTE.items() %} #}
+{# {% include "ospfd.conf.db.distributeroute.j2" %} #}
+{# {% endfor %} #}
+{# {% endif %} #}
+{# {\# -------OSPFV2_ROUTER_DISTRIBUTE_ROUTE end --------------------------- #\} #}
 {# -------OSPFV2_ROUTER_PASSIVE_INTERFACE Begin --------------------------- #}
 {% if OSPFV2_ROUTER_PASSIVE_INTERFACE is defined and OSPFV2_ROUTER_PASSIVE_INTERFACE|length > 0 %}
 {% for passintfkey, passintf_instance in OSPFV2_ROUTER_PASSIVE_INTERFACE.items() %}
