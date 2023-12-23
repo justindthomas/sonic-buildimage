@@ -113,6 +113,7 @@ class BgpdClientMgr(threading.Thread):
             'OSPFV2_ROUTER_DISTRIBUTE_ROUTE': ['ospfd'],
             'OSPFV2_INTERFACE': ['ospfd'],
             'OSPFV2_ROUTER_PASSIVE_INTERFACE': ['ospfd'],
+            'OSPFV2_NEIGHBOR': ['ospfd'],
             'STATIC_ROUTE': ['staticd'],
             'PIM_GLOBALS': ['pimd'],
             'PIM_INTERFACE': ['pimd'],
@@ -1137,6 +1138,20 @@ def handle_ospf_if_common(daemon, cmd_str, op, st_idx, args, data):
                                    CommandArgument(daemon, True, if_addr)))
     return cmd_list
 
+def handle_ospf_neighbor(daemon, cmd_str, op, st_ifx, args, data):
+    cmd_list = []
+    if_addr = "" if args[1] == '0.0.0.0' else args[1]
+    no_op = 'no ' if op == CachedDataWithOp.OP_DELETE else ''
+    param_value = args[2]
+
+    syslog.syslog(syslog.LOG_INFO, 'handle_ospf_neighbor cmd_str {} op {} st_idx {} args {} data {}'.format(
+                                    cmd_str, op, st_idx, args, data))
+
+    #cmd_list.append(cmd_str.format(CommandArgument(daemon, True, no_op),
+    #                               CommandArgument(daemon, True, param_value),
+    #                               CommandArgument(daemon, True, if_addr)))
+    
+    return cmd_list
 
 def handle_ospf_if_authtype(daemon, cmd_str, op, st_idx, args, data):
     cmd_list = []
@@ -1198,10 +1213,12 @@ def handle_ospf_if_nwtype(daemon, cmd_str, op, st_idx, args, data):
     no_op = 'no ' if op == CachedDataWithOp.OP_DELETE else ''
 
     nwtype = ''
-    if args[2] == 'POINT_TO_POINT_NETWORK' :
+    if args[1] == 'POINT_TO_POINT_NETWORK' :
         nwtype = 'point-to-point'
-    elif args[2] == 'BROADCAST_NETWORK' :
+    elif args[1] == 'BROADCAST_NETWORK' :
         nwtype = 'broadcast'
+    elif args[1] == 'NON_BROADCAST' :
+        nwtype = 'non-broadcast'
     else :
         syslog.syslog(syslog.LOG_ERR, 'handle_ospf_if_nwtype invalid nw type args {}'.format(args))
 
@@ -1976,6 +1993,12 @@ class BGPConfigDaemon:
                              ('retransmission-interval', '{}ip ospf retransmit-interval {} {}', handle_ospf_if_common),
                              ('transmit-delay', '{}ip ospf transmit-delay {} {}', handle_ospf_if_common),
                            ]
+
+    ospfv2_neighbor_key_map = [
+        ('poll-interval', '{}neighbor {} {} {}', handle_ospf_neighbor),
+        ('priority', '{}neighbor {} {} {}', handle_ospf_neighbor),
+    ]
+
     static_route_map = [(['ip_prefix|ipv4', '++blackhole', '++nexthop', '++ifname', '++track', '++tag', '++distance', '++nexthop-vrf'],
                          '{no:no-prefix}ip route {} {:blackhole} {} {} {:track} {:nh-tag} {} {:nh-vrf}', hdl_static_route, socket.AF_INET),
                         (['ip_prefix|ipv6', '++blackhole', '++nexthop', '++ifname', '++track', '++tag', '++distance', '++nexthop-vrf'],
@@ -2050,6 +2073,7 @@ class BGPConfigDaemon:
                       'OSPFV2_ROUTER_AREA_VIRTUAL_LINK':ospfv2_area_vlink_key_map,
                       'OSPFV2_ROUTER_AREA_POLICY_ADDRESS_RANGE':ospfv2_area_range_key_map,
                       'OSPFV2_INTERFACE':               ospfv2_interface_key_map,
+                      'OSPFV2_NEIGHBOR':                ospfv2_neighbor_key_map,
                       'STATIC_ROUTE':                   static_route_map,
                       'PIM_GLOBALS':                    pim_global_key_map,
                       'PIM_INTERFACE':                  pim_interface_key_map,
@@ -2247,6 +2271,7 @@ class BGPConfigDaemon:
             ('OSPFV2_ROUTER_DISTRIBUTE_ROUTE', self.bgp_table_handler_common),
             ('OSPFV2_INTERFACE', self.bgp_table_handler_common),
             ('OSPFV2_ROUTER_PASSIVE_INTERFACE', self.bgp_table_handler_common),
+            ('OSPFV2_NEIGHBOR', self.bgp_table_handler_common),
             ('STATIC_ROUTE', self.bgp_table_handler_common),
             ('PIM_GLOBALS', self.bgp_table_handler_common),
             ('PIM_INTERFACE', self.bgp_table_handler_common),

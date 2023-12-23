@@ -19,6 +19,9 @@ interface {{ intfname }}
 {% if ospf_intf_instance['network-type'] == 'POINT_TO_POINT_NETWORK' %}
   ip ospf network point-to-point {{ intfaddr }}
 {% endif %}
+{% if ospf_intf_instance['network-type'] == 'NON_BROADCAST' %}
+  ip ospf network non-broadcast
+{% endif %}
 {% endif %}
 {% if 'metric' in ospf_intf_instance %}
   ip ospf cost {{ ospf_intf_instance['metric'] }} {{ intfaddr }}
